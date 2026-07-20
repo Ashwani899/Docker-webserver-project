@@ -1,0 +1,39 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docker-webserver-demo:latest
+    container_name: webserver-demo
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+    # keeps one runaway container from eating the whole host - learned this
+    # the hard way after a local container pinned a CPU core during testing
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          memory: 64M
+
+    # capped logs so `docker logs` doesn't turn into an unbounded file on disk
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health.html"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+    volumes:
+      # mounted read-only so the running container can never write back into
+      # the site source on the host - defense against a compromised process
+      - ./site:/usr/share/nginx/html:ro
