@@ -85,3 +85,7 @@ This is not a hardened production web tier. Before exposing it publicly:
 - Add Nginx configuration linting and container vulnerability scanning.
 - Add a second service to exercise Compose networking.
 - Document a deployment and rollback procedure only if one is actually implemented and tested.
+
+## License
+
+No license file is currently included. Do not assume reuse or redistribution rights until a license is explicitly added.
